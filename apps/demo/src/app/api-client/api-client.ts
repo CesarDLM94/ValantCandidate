@@ -14,6 +14,18 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export module ValantDemoApiClient {
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
+type FourNumberArray = [number, number, number, number];
+type ArrayOfFourNumberArrays = FourNumberArray[];
+
+declare interface MazeCellInstance {
+    x: number;
+    y: number;
+    isWall: boolean;
+    isEnd: boolean;
+    isStart: boolean;
+    walls: string[];
+    paths: string[];
+  }
 
 @Injectable()
 export class Client {
@@ -29,7 +41,7 @@ export class Client {
     /**
      * @return Success
      */
-    maze(): Observable<string[]> {
+    maze(positionX:number, positionY:number): Observable<string[]> {
         let url_ = this.baseUrl + "/Maze";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -41,7 +53,7 @@ export class Client {
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("get", url_ + "?coordinate["+ positionX +"]=" + positionY, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processMaze(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -55,12 +67,104 @@ export class Client {
         }));
     }
 
+    mazeSchema(mazeId:number): Observable<MazeCellInstance[][]> {
+        let url_ = this.baseUrl + "/Maze/getMazeSchema?mazeId=" + mazeId;
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCellMazeStruct(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCellMazeStruct(<any>response_);
+                } catch (e) {
+                    return <Observable<MazeCellInstance[][]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<MazeCellInstance[][]>><any>_observableThrow(response_);
+        }));
+    }
+
+    uploadFile(fileFormData: FormData, mazeId:number): Observable<string[]>{
+        let url_ = this.baseUrl + "/Maze/uploadFile?mazeId=" + mazeId;
+        url_ = url_.replace(/[?&]$/, "");
+        var headers = new Headers({
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        });
+        return this.http.post(url_, fileFormData).pipe(_observableMergeMap((response_ : HttpResponseBase) => {
+            return this.uploadedFileHandler(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.uploadedFileHandler(<any>response_);
+                } catch (e) {
+                    return <Observable<string[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    
+
+    protected uploadedFileHandler(response: HttpResponseBase): Observable<string[]> {
+       
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <string[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string[]>(<any>null);
+    }
+
+    protected processCellMazeStruct(response: HttpResponseBase): Observable<MazeCellInstance[][]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+            console.log("RESPONSE IS :" +  (response instanceof HttpResponse ? "yes" : "no"));
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <MazeCellInstance[][]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<MazeCellInstance[][]>(<any>null);
+    }
+
     protected processMaze(response: HttpResponseBase): Observable<string[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
+            console.log("RESPONSE IS :" +  (response instanceof HttpResponse ? "yes" : "no"));
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -109,6 +213,8 @@ function throwException(message: string, status: number, response: string, heade
 }
 
 function blobToText(blob: any): Observable<string> {
+    console.log("BLOB:");
+    console.log(blob);
     return new Observable<string>((observer: any) => {
         if (!blob) {
             observer.next("");

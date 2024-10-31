@@ -29,5 +29,16 @@ namespace ValantDemoApi.Tests
           content.Should().Contain("Left");
           content.Should().Contain("Right");
         }
+
+
+    //Empty file
+
+    //Invalid index
+
+    //Maze not existing
+
+    //Out of range index
+
+
     }
 }

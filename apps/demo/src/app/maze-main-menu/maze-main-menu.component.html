@@ -1,0 +1,20 @@
+
+<ng-component *ngIf="currentSelectedMenuType === 0">
+
+    <input type="file" (change)="onChange($event)" class="file-input" />
+    <button (click)="onUpload()">Upload the file</button>
+    
+    <ul>
+        <ng-component *ngFor = "let mazeElement of listOfMazes">
+            <li><button (click)="activateMazeMode(mazeElement)">Maze {{mazeElement}}</button> </li>
+        </ng-component>
+    </ul>
+</ng-component>
+
+<ng-component *ngIf="currentSelectedMenuType === 1">
+    <button (click)="activateMenuMode()">Back To Menu</button>
+    <ng-component *ngFor = "let mazeElement of currentMaze">
+        <valant-maze-game [mazeId] = 'mazeElement'></valant-maze-game>
+    </ng-component>
+</ng-component>
+
