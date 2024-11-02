@@ -22,6 +22,7 @@ namespace ValantDemoApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddScoped<IMazeCommandsService, MazeCommandsService>();
+      services.AddScoped<IFileReaderService, FileReaderService>();
       services.AddCors();
       services.AddControllers();
       services.AddSwaggerGen(c =>

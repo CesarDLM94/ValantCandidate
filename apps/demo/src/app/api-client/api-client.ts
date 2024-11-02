@@ -143,7 +143,6 @@ export class Client {
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-            console.log("RESPONSE IS :" +  (response instanceof HttpResponse ? "yes" : "no"));
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -164,7 +163,6 @@ export class Client {
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-            console.log("RESPONSE IS :" +  (response instanceof HttpResponse ? "yes" : "no"));
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -213,8 +211,7 @@ function throwException(message: string, status: number, response: string, heade
 }
 
 function blobToText(blob: any): Observable<string> {
-    console.log("BLOB:");
-    console.log(blob);
+ 
     return new Observable<string>((observer: any) => {
         if (!blob) {
             observer.next("");

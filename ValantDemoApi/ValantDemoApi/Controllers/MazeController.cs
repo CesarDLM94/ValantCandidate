@@ -25,12 +25,14 @@ namespace ValantDemoApi.Controllers
     {
         private readonly ILogger<MazeController> _logger;
         private readonly IMazeCommandsService _mazeCommandService;
+        private readonly IFileReaderService _fileReaderService;
 
 
-        public MazeController(ILogger<MazeController> logger, IMazeCommandsService mazeCommandService)
+        public MazeController(ILogger<MazeController> logger, IMazeCommandsService mazeCommandService, IFileReaderService fileReaderService)
         {
             _logger = logger;
             _mazeCommandService = mazeCommandService;
+            _fileReaderService = fileReaderService;
         }
 
       [HttpGet]
@@ -59,17 +61,18 @@ namespace ValantDemoApi.Controllers
     public async Task<IActionResult> PostUploadMazeFile([FromForm] IFormFile file, int mazeId)
     {
       if (file.Length <= 0 || file.ContentType is null) return BadRequest();
-      var actualFileName = file.FileName;
-      var result = new StringBuilder();
-      using (var reader = new StreamReader(file.OpenReadStream()))
+
+      var fileString = _fileReaderService.Read(file);
+      var jsonFile = JsonConvert.DeserializeObject<MazeFileSetting>(fileString);
+      try
       {
-        while (reader.Peek() >= 0)
-        {
-          result.AppendLine(await reader.ReadLineAsync());
-        }
+        _mazeCommandService.SetMazeMatrix(jsonFile.Rows.Values.ToList(), mazeId);
+
+      } catch (Exception ex)
+      {
+        _logger.LogError(ex.ToString());
       }
-      var jsonFile = JsonConvert.DeserializeObject<MazeFileSetting>(result.ToString());
-      _mazeCommandService.SetMazeMatrix(jsonFile.Rows.Values.ToList(), mazeId);
+
 
       return Ok();
     }
@@ -78,7 +81,12 @@ namespace ValantDemoApi.Controllers
     [Route("getMazeSchema")]
     public async Task<IEnumerable<IEnumerable<MazeSchemaResponse>>> GetMazeSchema(int mazeId)
     {
-      return _mazeCommandService.GetMazeSchema(mazeId);
+      var mazeSchema = _mazeCommandService.GetMazeSchema(mazeId);
+      if(mazeSchema == null)
+      {
+        _logger.LogError($"The maze id {mazeId} does not belong to any registered mazes.");
+      }
+      return mazeSchema;
     } 
   }
 }

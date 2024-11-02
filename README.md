@@ -1,3 +1,19 @@
+
+## Format for Maze Input
+I changed the format of the input file for the maze to be a JSON file with the following schema:
+
+{
+	rows:{
+        "row1": [1,0,1,1],
+        "row2": [1,0,1,0],
+        "row3": [1,0,2,0],
+        "row4": [1,0,1,0],
+        "row5": [1,1,1,3],
+	}
+}
+
+
+
 # Valant
 
 This project was generated using [Nx](https://nx.dev).

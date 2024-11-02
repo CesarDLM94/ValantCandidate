@@ -14,13 +14,12 @@ export class MazeMainMenuComponent implements OnInit {
   currentSelectedMenuType : number = 0;
   currentMazeId: number = 0;
   constructor(private logger: LoggingService, private stuffService: StuffService, private filerUploader: FileUploaderService) { }
-
+  private uploadedFile : boolean = false;
   onUpload():void{
     if (this.file) {
         const formData = new FormData();
 
         formData.append('file', this.file, this.file.name);
-        console.log("File uploader:" + this.filerUploader);
         var mazeId = this.listOfMazes.length + 1;
         this.listOfMazes.push(mazeId);
 
@@ -42,6 +41,7 @@ export class MazeMainMenuComponent implements OnInit {
 
     if (file) {
       this.file = file;
+      this.uploadedFile = true;
     }
   }
 

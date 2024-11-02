@@ -27,11 +27,6 @@ namespace ValantDemoApi.Services
       return new List<string>();
     }
 
-    public List<List<int>> GetMazeMatrix()
-    {
-      return MazeMatrix;
-    }
-
     public void SetMazeMatrix(List<List<int>> matrix, int matrixId)
     {
       MazeSchemas.TryAdd(matrixId, matrix);
@@ -43,7 +38,6 @@ namespace ValantDemoApi.Services
       MazeSchemas.TryGetValue(mazeId, out var schemaResult);
       if(schemaResult == null)
       {
-        //Throw error.
         return null;
       }
       MazeMatrix = schemaResult;
@@ -68,8 +62,7 @@ namespace ValantDemoApi.Services
       return rowList;
     }
 
-
-    public void GetCellsNearby(int x, int y, MazeSchemaResponse cellInstance)
+    private void GetCellsNearby(int x, int y, MazeSchemaResponse cellInstance)
     {
       GetIfSpecialCell(x, y, cellInstance);
       GetMazeCellType(x + 1, y, MazeCommands.DownCommand, cellInstance);
@@ -79,7 +72,7 @@ namespace ValantDemoApi.Services
 
     }
 
-    public void GetIfSpecialCell(int x, int y, MazeSchemaResponse cellInstance)
+    private void GetIfSpecialCell(int x, int y, MazeSchemaResponse cellInstance)
     {
       var row = MazeMatrix.ElementAtOrDefault(x);
       if (row == default(List<int>) || x < 0 || x >= MazeMatrix.Count)
@@ -110,7 +103,7 @@ namespace ValantDemoApi.Services
 
 
 
-    public void GetMazeCellType(int x, int y, string sideOrientation, MazeSchemaResponse cellInstance)
+    private void GetMazeCellType(int x, int y, string sideOrientation, MazeSchemaResponse cellInstance)
     {
       var row = MazeMatrix.ElementAtOrDefault(x);
       if (row == default(List<int>) || x < 0 || x >= MazeMatrix.Count)

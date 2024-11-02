@@ -1,14 +1,20 @@
 
 <ng-component *ngIf="currentSelectedMenuType === 0">
-
-    <input type="file" (change)="onChange($event)" class="file-input" />
-    <button (click)="onUpload()">Upload the file</button>
-    
-    <ul>
-        <ng-component *ngFor = "let mazeElement of listOfMazes">
-            <li><button (click)="activateMazeMode(mazeElement)">Maze {{mazeElement}}</button> </li>
-        </ng-component>
-    </ul>
+    <div class="file-selection-container">
+        <p>* Upload a file to create mazes based on that template</p>
+        <input type="file" (change)="onChange($event)" class="file-input" />
+        
+        <button *ngIf="uploadedFile === true" (click)="onUpload()" class="upload-file">Create New Maze</button>
+        
+    </div>
+    <ng-component *ngIf="listOfMazes.length > 0">
+        <h2>List of Mazes:</h2>
+        <ul>
+            <ng-component *ngFor = "let mazeElement of listOfMazes">
+                <li><button (click)="activateMazeMode(mazeElement)">Maze {{mazeElement}}</button> </li>
+            </ng-component>
+        </ul>
+    </ng-component>
 </ng-component>
 
 <ng-component *ngIf="currentSelectedMenuType === 1">

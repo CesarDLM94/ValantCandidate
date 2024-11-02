@@ -25,6 +25,8 @@ export class MazeGameComponent implements OnInit {
   MazeGameStyleClass = "upperBorder";
   selectedCellX = 0;
   public data: string[];
+  finalCellX = 0;
+  finalCellY = 0;
   selectedCellY = 0;
   isMazeCompleted = false;
   definedStartCell = false;
@@ -47,12 +49,6 @@ export class MazeGameComponent implements OnInit {
     });
   }
 
-
-
-   highlightCurrent():void{
-    console.log("Pressed key");
-   }
-
    isCurrentSelectedCell(cellInstance:any){
     var isCurrentCoordinate = cellInstance.isStart;
     if(isCurrentCoordinate && !this.definedStartCell){
@@ -68,15 +64,23 @@ export class MazeGameComponent implements OnInit {
     return isCurrentCoordinate;
    }
 
-   isAccordingIndexesSelected(cellInstance:any){
-    return this.selectedCellX === cellInstance.x && this.selectedCellY === cellInstance.y ? true : null;
+   isAccordingIndexesSelected(){
+    return this.selectedCellX === this.finalCellX && this.selectedCellY === this.finalCellY ? true : null;
    }
 
    completedMaze(cellInstance:any){
     var isFinalCell = cellInstance.isEnd
-    if(isFinalCell && this.isAccordingIndexesSelected(cellInstance)){
-      this.isMazeCompleted = true;
-      this.cdref.detectChanges();
+    if(isFinalCell){
+      this.finalCellX = cellInstance.x
+      this.finalCellY = cellInstance.y
+    }
+
+   }
+
+   validateIfEnded(){
+    
+    if(this.isAccordingIndexesSelected()){
+       this.isMazeCompleted = true;
     }
    }
 
@@ -85,6 +89,7 @@ export class MazeGameComponent implements OnInit {
       if(this.data.includes("down")){
       
             this.selectedCellX = this.selectedCellX + 1;
+            this.validateIfEnded();
           }
     });
     
@@ -95,6 +100,7 @@ export class MazeGameComponent implements OnInit {
       if(this.data.includes("left")){
       
         this.selectedCellY = this.selectedCellY - 1;
+        this.validateIfEnded();
       }
     });
    }
@@ -103,6 +109,7 @@ export class MazeGameComponent implements OnInit {
     this.getStuff(() => {
       if(this.data.includes("right")){
         this.selectedCellY = this.selectedCellY + 1;
+        this.validateIfEnded();
       }
     });
     
@@ -112,6 +119,7 @@ export class MazeGameComponent implements OnInit {
     this.getStuff(() => {
       if(this.data.includes("up")){
         this.selectedCellX = this.selectedCellX - 1;
+        this.validateIfEnded();
       }
     });
     
