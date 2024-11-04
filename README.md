@@ -12,6 +12,9 @@ I changed the format of the input file for the maze to be a JSON file with the f
 	}
 }
 
+## TODOs - Pending that I'd like to have implemented:
+1. Put some more unit testing and use something like Moq to generate responses.
+2. Review more the rendering process of components to avoid too many re-renders in the rendering tree.
 
 
 # Valant
