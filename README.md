@@ -1,3 +1,22 @@
+
+## Format for Maze Input
+I changed the format of the input file for the maze to be a JSON file with the following schema:
+
+{
+	rows:{
+        "row1": [1,0,1,1],
+        "row2": [1,0,1,0],
+        "row3": [1,0,2,0],
+        "row4": [1,0,1,0],
+        "row5": [1,1,1,3],
+	}
+}
+
+## TODOs - Pending that I'd like to have implemented, but didn't have enough time to do them:
+1. Put some more unit testing and use something like Moq to generate responses.
+2. Review more the rendering process of components to avoid too many re-renders in the rendering tree.
+
+
 # Valant
 
 This project was generated using [Nx](https://nx.dev).

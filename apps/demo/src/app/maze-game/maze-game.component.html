@@ -1,0 +1,27 @@
+
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+     
+        <!-- <ng-component *ngFor = "let mazeCellType of MazeCellTypes">
+            <valant-maze-game-cell [styleClass] = 'mazeCellType'></valant-maze-game-cell>
+        </ng-component> -->
+
+            <tr *ngFor = "let mazeRow of MazeCollection;">
+                <ng-component *ngFor="let mazeCellType of mazeRow">
+                    <!-- <span>x: {{selectedCellX}}</span> -->
+                    <valant-maze-game-cell [cellInstance] = 'mazeCellType' [selected]="isCurrentSelectedCell(mazeCellType)" [completedCell]="completedMaze(mazeCellType)"></valant-maze-game-cell>
+                </ng-component>
+            </tr>
+        
+    
+</table>
+
+<ng-component *ngIf="isMazeCompleted === true">
+    Completed the maze!
+</ng-component>
+
+<ng-component *ngIf="isMazeCompleted === false">
+    <button (click)="moveUp()">Up</button>
+    <button (click)="moveLeft()">Left</button>
+    <button (click)="moveRight()">Right</button>
+    <button (click)="moveDown()">Down</button>
+</ng-component>
